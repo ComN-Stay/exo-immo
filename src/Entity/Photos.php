@@ -20,9 +20,6 @@ class Photos
     #[ORM\Column(length: 255)]
     private ?string $filename = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $views = null;
-
     #[ORM\ManyToOne(inversedBy: 'photos')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Property $property = null;
@@ -52,18 +49,6 @@ class Photos
     public function setFilename(string $filename): self
     {
         $this->filename = $filename;
-
-        return $this;
-    }
-
-    public function getViews(): ?int
-    {
-        return $this->views;
-    }
-
-    public function setViews(int $views): self
-    {
-        $this->views = $views;
 
         return $this;
     }
