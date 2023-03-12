@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\PropertyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,24 +13,37 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PropertyRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(normalizationContext: ['groups' => 'property:item']),
+        new GetCollection(normalizationContext: ['groups' => 'property:list'])
+    ],
+    order: ['price' => 'ASC'],
+    paginationEnabled: false,
+)]
 class Property
 {
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['property:list', 'property:item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['property:list', 'property:item'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['property:list', 'property:item'])]
     private ?string $resume = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['property:list', 'property:item'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['property:list', 'property:item'])]
     private ?string $price = null;
 
     #[ORM\Column(length: 255)]
@@ -36,15 +53,18 @@ class Property
     private ?string $address_comp = null;
 
     #[ORM\Column(length: 25)]
+    #[Groups(['property:list', 'property:item'])]
     private ?string $zipcode = null;
 
     #[ORM\Column(length: 80)]
+    #[Groups(['property:list', 'property:item'])]
     private ?string $town = null;
 
     #[ORM\Column(length: 100)]
     private ?string $country = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['property:list', 'property:item'])]
     private ?string $display_location = null;
 
     #[ORM\Column(nullable: true)]
@@ -55,17 +75,21 @@ class Property
 
     #[ORM\ManyToOne(inversedBy: 'properties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['property:list', 'property:item'])]
     private ?TypeTransaction $transaction_type = null;
 
     #[ORM\ManyToOne(inversedBy: 'properties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['property:list', 'property:item'])]
     private ?TypeBien $type_bien = null;
 
     #[ORM\ManyToOne(inversedBy: 'properties')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
-    #[ORM\OneToMany(mappedBy: 'property', targetEntity: Photos::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'property', targetEntity: Photos::class, orphanRemoval: true, fetch: "EAGER")]
+    #[ORM\JoinColumn(name: 'photos', referencedColumnName: 'property')]
+    #[Groups(['property:list', 'property:item'])]
     private Collection $photos;
 
     public function __construct()
