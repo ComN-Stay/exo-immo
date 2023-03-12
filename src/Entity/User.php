@@ -2,19 +2,38 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Put;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Repository\UserRepository;
+use ApiPlatform\Metadata\ApiResource;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(
+            uriTemplate: '/user/{id}',
+            normalizationContext: ['groups' => 'user:item'],
+            schemes: ['https']
+        ),
+        new Put(
+            uriTemplate: '/user',
+            status: 301
+        )
+    ],
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -27,39 +46,58 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Groups(['user:item'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 10, nullable: true)]
+    #[Groups(['user:item'])]
     private ?string $gender = null;
 
     #[ORM\Column(length: 80)]
+    #[Groups(['user:item'])]
+    #[Assert\NotBlank]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 80)]
+    #[Groups(['user:item'])]
+    #[Assert\NotBlank]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Groups(['user:item'])]
     private ?string $company = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:item'])]
+    #[Assert\NotBlank]
     private ?string $address = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:item'])]
     private ?string $address_comp = null;
 
     #[ORM\Column(length: 10)]
+    #[Groups(['user:item'])]
+    #[Assert\NotBlank]
     private ?string $zipcode = null;
 
     #[ORM\Column(length: 80)]
+    #[Groups(['user:item'])]
+    #[Assert\NotBlank]
     private ?string $town = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['user:item'])]
+    #[Assert\NotBlank]
     private ?string $country = null;
 
     #[ORM\Column(length: 25, nullable: true)]
+    #[Groups(['user:item'])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 25, nullable: true)]
+    #[Groups(['user:item'])]
+    #[Assert\NotBlank]
     private ?string $mobile = null;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Property::class)]

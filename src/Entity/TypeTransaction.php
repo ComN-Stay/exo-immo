@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\TypeTransactionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,14 +13,24 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TypeTransactionRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(normalizationContext: ['groups' => 'typetransaction:item']),
+        new GetCollection(normalizationContext: ['groups' => 'typetransaction:list'])
+    ],
+    order: ['name' => 'DESC'],
+    paginationEnabled: false,
+)]
 class TypeTransaction
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['typetransaction:list', 'typetransaction:item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['typetransaction:list', 'typetransaction:item'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
